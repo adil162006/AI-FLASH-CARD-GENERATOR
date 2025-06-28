@@ -1,0 +1,39 @@
+.flashcard-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.flashcard {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  transition: box-shadow 0.2s;
+}
+
+.flashcard:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.flashcard-question {
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.flashcard-answer {
+  color: #555;
+}
+
+.no-cards {
+  text-align: center;
+  color: #888;
+  margin: 2rem 0;
+} 
