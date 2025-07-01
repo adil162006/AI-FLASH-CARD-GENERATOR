@@ -211,7 +211,7 @@ Content:
           <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Enter your notes here or upload a file (max 20,000,000 characters)"
+          placeholder="Enter your text here"
           className="input-textarea"
           rows="10"
           />
@@ -222,6 +222,7 @@ Content:
             accept=".txt,.pdf,.docx,.xlsx,.csv"
             ref={fileInputRef}
             style={{ display: 'none' }}
+            aria-label="upload"
           />
           <button onClick={() => fileInputRef.current.click()}>
             Upload File
@@ -231,7 +232,7 @@ Content:
             disabled={loading || !notes.trim()}
             className="generate-btn"
           >
-            {loading ? 'Generating...' : 'Generate Flashcards'}
+            {loading ? 'Generating...' : 'Generate'}
           </button>
         </div>
         {error && <div className="error">{error}</div>}

@@ -2,18 +2,34 @@ import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase/config';
 
-export default function LoginForm({ onSwitchToSignup, onCancel }) {
+export default function LoginForm({ onLogin, onSwitchToSignup, error: propError }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(propError || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Invalid email format');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await onLogin({ email, password });
     } catch (err) {
       setError(err.message);
     }
@@ -25,27 +41,25 @@ export default function LoginForm({ onSwitchToSignup, onCancel }) {
       <div className="auth-container">
         <h2>Login</h2>
         <form onSubmit={handleSubmit} className="auth-form">
+          <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
-            placeholder="Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            required
           />
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            required
           />
           <div className="auth-buttons">
             <button type="submit" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </button>
-            <button type="button" onClick={onCancel} className="cancel-btn">
-              Cancel
-            </button>
+
           </div>
           {error && <div className="error">{error}</div>}
         </form>

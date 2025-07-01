@@ -7,14 +7,15 @@ export default function FlashcardList({ cards }) {
   };
 
   if (!cards || cards.length === 0) {
-    return <div className="no-cards">No flashcards generated yet.</div>;
+    return <div className="no-cards" data-testid="flashcard-list">No flashcards generated yet.</div>;
   }
 
   return (
-    <div className="flashcard-list">
+    <div className="flashcard-list" data-testid="flashcard-list">
       {cards.map((card, idx) => (
         <div
           className="flashcard"
+          data-testid="flashcard"
           key={idx}
           data-index={idx}
           onClick={() => handleFlip(idx)}

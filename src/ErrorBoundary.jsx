@@ -27,6 +27,8 @@ class ErrorBoundary extends Component {
     });
 
     this.setState({
+      hasError: true,
+      error,
       errorInfo,
       timestamp: new Date().toISOString()
     });
@@ -40,10 +42,10 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary">
-          <h2>Oops! Something went wrong</h2>
+        <div className="error-container">
+          <h2>Something went wrong</h2>
           <p className="error-message">
-            {this.state.error?.message || 'An unexpected error occurred'}
+            {this.state.error?.message}
           </p>
           <div className="error-actions">
             <button 

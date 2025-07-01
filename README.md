@@ -27,6 +27,10 @@ A modern web application that automatically generates study flashcards from your
   - PDF.js for PDF processing
   - Mammoth for Word documents
   - XLSX for spreadsheets
+- **Testing**: 
+  - Vitest for unit and integration testing
+  - React Testing Library for component testing
+  - Jest DOM for DOM testing utilities
 
 ## Getting Started
 
@@ -81,6 +85,28 @@ npm run dev
 
 3. Open http://localhost:5173 in your browser
 
+### Running Tests
+
+The project includes a comprehensive test suite using Vitest and React Testing Library. Here are the available test commands:
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests with UI
+npm run test:ui
+```
+
+Test files are located in the `src/__tests__` directory and follow these conventions:
+- Unit tests for components
+- Integration tests for features
+- Error boundary testing
+- Form validation testing
+- API integration testing
+
 ## Usage
 
 1. Log in to your account
@@ -91,6 +117,14 @@ npm run dev
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Make sure to add tests for any new features and ensure all tests pass before submitting a PR.
 
 ## License
 

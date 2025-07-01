@@ -18,26 +18,50 @@ const validatePassword = (password) => {
   return null;
 };
 
-export default function SignupForm({ onSwitchToLogin, onCancel }) {
+export default function SignupForm({ onSignup, onSwitchToLogin, error: propError }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(propError || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      setError(passwordError);
-      setLoading(false);
+    if (!email) {
+      setError('Email is required');
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Invalid email format');
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (!confirmPassword) {
+      setError('Confirm password is required');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await onSignup({ email, password });
     } catch (err) {
       setError(err.message);
     }
@@ -49,27 +73,32 @@ export default function SignupForm({ onSwitchToLogin, onCancel }) {
       <div className="auth-container">
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit} className="auth-form">
+          <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
-            placeholder="Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            required
           />
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            required
+          />
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
           />
           <div className="auth-buttons">
             <button type="submit" disabled={loading}>
               {loading ? 'Signing up...' : 'Sign Up'}
             </button>
-            <button type="button" onClick={onCancel} className="cancel-btn">
-              Cancel
-            </button>
+
           </div>
           {error && <div className="error">{error}</div>}
         </form>
