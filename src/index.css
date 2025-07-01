@@ -1,9 +1,23 @@
 /* Ensure full height for app containers */
-html, body, #root {
+html, body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 /* Root font and theme settings */
 :root {
@@ -11,9 +25,9 @@ html, body, #root {
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #212529;
+  background-color: #f8f9fa;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,12 +36,13 @@ html, body, #root {
 }
 
 /* Body base styles */
-/* body {
+body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  display: block; 
-} */
+  display: flex;
+  flex-direction: column;
+}
 
 /* Default link styles */
 a {

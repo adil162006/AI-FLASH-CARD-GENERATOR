@@ -9,14 +9,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs
 
 export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
   const [notes, setNotes] = useState('');
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef();
 
+  const validateInput = (text) => {
+    if (!text || !text.trim()) {
+      return 'Please enter some text or upload a file';
+    }
+    if (text.length > 20000000) {
+      return 'Text is too long. Please keep it under 20,000,000 characters';
+    }
+    return null;
+  };
+
   const handleGenerate = async () => {
     if (!user) {
       onAuthRequired();
+      return;
+    }
+
+    const validationError = validateInput(notes);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -32,7 +48,16 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ content: notes })
+        body: JSON.stringify({
+          prompt: `Generate flashcards based only on the following content.
+Return the result as a JSON array of objects, each with a "question" and "answer".
+Do not include any explanation or extra text.
+
+Content:
+"""\n${notes}\n"""
+`,
+          content: notes
+        })
       });
 
       if (!response.ok) {
@@ -41,6 +66,7 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
 
       const data = await response.json();
       setCards(data.cards || []);
+      setNotes(''); // Clear the text area after successful generation
     } catch (err) {
       setError(err.message);
     } finally {
@@ -54,6 +80,22 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
 
     const type = file.type;
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const SUPPORTED_TYPES = {
+      'text/plain': 'Text',
+      'application/pdf': 'PDF',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+      'application/vnd.ms-excel': 'Excel',
+      'text/csv': 'CSV',
+      'image/png': 'Image',
+      'image/jpeg': 'Image',
+      'image/webp': 'Image'
+    };
+
+    if (!SUPPORTED_TYPES[type]) {
+      setError(`Unsupported file type. Supported types: ${Object.values(SUPPORTED_TYPES).join(', ')}`);
+      return;
+    }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
@@ -134,7 +176,7 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
         setNotes(prev => prev + `\n[Image Uploaded: ${file.name}]`);
 
       } else {
-        alert('Unsupported file type');
+        setError(`Unsupported file type. Supported types: Text, PDF, Word, Excel, CSV, Images`);
       }
     } catch (err) {
       setError(`Failed to process file: ${err.message}`);
@@ -150,23 +192,30 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
 
 
   return (
-    <div className="generator-container">
-      <div className="generator-header">
-        <h2>Flashcard Generator</h2>
-        {user ? (
-          <button onClick={onLogout} className="logout-btn">Logout</button>
-        ) : (
-          <button onClick={onAuthRequired} className="login-btn">Login</button>
-        )}
+    <>
+      <div className="nav-container">
+        <nav className="navbar">
+          <h2>Flashcard Generator</h2>
+          {user ? (
+            <button onClick={onLogout}>Logout</button>
+          ) : (
+            <button onClick={onAuthRequired}>Login</button>
+          )}
+        </nav>
       </div>
+      <div className="generator-container">
+        <div className="input-section">
+          <h3>📚 Flashcard Generator</h3>
+          <p>Upload your notes or study materials (PDF, DOCX, XLSX, PNG) and generate AI-powered flashcards in seconds.</p>
 
-      <div className="input-section">
-        <textarea
+          <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Enter your notes here or upload a file"
-        />
-        <div className="button-group">
+          placeholder="Enter your notes here or upload a file (max 20,000,000 characters)"
+          className="input-textarea"
+          rows="10"
+          />
+          <div className="button-group">
           <input
             type="file"
             onChange={handleFileUpload}
@@ -186,9 +235,10 @@ export default function FlashcardGenerator({ user, onLogout, onAuthRequired }) {
           </button>
         </div>
         {error && <div className="error">{error}</div>}
-      </div>
+        </div>
 
-      <FlashcardList cards={cards} />
-    </div>
+        <FlashcardList cards={cards} />
+      </div>
+    </>
   );
 }
