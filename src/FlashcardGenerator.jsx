@@ -237,8 +237,8 @@ Content:
         {error && <div className="error">{error}</div>}
         </div>
 
-        <FlashcardList cards={cards} />
       </div>
+        <FlashcardList cards={cards} />
     </>
   );
 }

@@ -9,7 +9,6 @@ html, body {
 body {
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #f8f9fa;
 }
 
 #root {
