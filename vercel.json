@@ -1,5 +1,4 @@
 {
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./server/",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite"
