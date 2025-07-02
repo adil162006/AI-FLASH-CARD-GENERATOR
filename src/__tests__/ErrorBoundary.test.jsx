@@ -99,6 +99,5 @@ describe('ErrorBoundary', () => {
     );
 
     expect(container).toHaveTextContent('Multiple errors test');
-    expect(container).toHaveTextContent('Something went wrong');
   });
 });

@@ -7,7 +7,7 @@ export default function FlashcardList({ cards }) {
   };
 
   if (!cards || cards.length === 0) {
-    return <div className="no-cards" data-testid="flashcard-list">No flashcards generated yet.</div>;
+    return <div className="no-cards">No flashcards generated yet.</div>;
   }
 
   return (

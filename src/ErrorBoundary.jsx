@@ -27,8 +27,6 @@ class ErrorBoundary extends Component {
     });
 
     this.setState({
-      hasError: true,
-      error,
       errorInfo,
       timestamp: new Date().toISOString()
     });

@@ -13,14 +13,26 @@ if (!admin.apps.length) {
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\n/g, '\n'),
     }),
   });
 }
 
 // 🌐 CORS configuration
+const allowedOrigins = [
+  'https://ai-flash-card-generator-xi.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+    }
+    return callback(null, true);
+  },
   methods: ['GET', 'POST'],
   credentials: true,
   maxAge: 86400,
@@ -40,10 +52,53 @@ app.use(express.json());
 // 📦 Routes
 app.use('/api/flashcards', flashcardsRouter);
 
-// ❗ Global error handler
+// ❗ Enhanced Global error handler
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  // Generate a unique error ID for tracking
+  const errorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+  // Log detailed error information
+  console.error(`Error ID: ${errorId}`, {
+    error: err,
+    timestamp: new Date().toISOString(),
+    url: req.url,
+    method: req.method,
+    body: req.body,
+    headers: req.headers,
+  });
+
+  // Handle specific error types
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({
+      error: 'Validation Error',
+      message: err.message,
+      errorId
+    });
+  }
+
+  if (err.name === 'AuthenticationError' || err.message.includes('auth')) {
+    return res.status(401).json({
+      error: 'Authentication Error',
+      message: 'Invalid or expired authentication',
+      errorId
+    });
+  }
+
+  if (err.code === 'LIMIT_EXCEEDED') {
+    return res.status(429).json({
+      error: 'Rate Limit Exceeded',
+      message: 'Too many requests. Please try again later.',
+      errorId
+    });
+  }
+
+  // Default error response
+  res.status(500).json({
+    error: 'Internal Server Error',
+    errorId,
+    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
+    timestamp: new Date().toISOString()
+  });
 });
 
 module.exports = app;
