@@ -101,4 +101,11 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ✅ Default route to check if backend is running
+app.get('/', (req, res) => {
+  res.send('Flashcard Generator Backend is running.');
+});
+
+// ✅ Favicon request handler to avoid 500 error
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 module.exports = app;
