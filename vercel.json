@@ -1,5 +1,5 @@
 {
-  "ignoreCommand": "echo Ignoring server folder",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./server/",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite"
