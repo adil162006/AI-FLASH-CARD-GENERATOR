@@ -52,6 +52,17 @@ app.use(express.json());
 // 📦 Routes
 app.use('/api/flashcards', flashcardsRouter);
 
+// 📦 Routes
+app.use('/api/flashcards', flashcardsRouter);
+
+// ✅ Default route
+app.get('/', (req, res) => {
+  res.send('Flashcard Generator Backend is running.');
+});
+
+// ✅ Favicon handler
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // ❗ Enhanced Global error handler
 app.use((err, req, res, next) => {
   // Generate a unique error ID for tracking
@@ -101,11 +112,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ Default route to check if backend is running
-app.get('/', (req, res) => {
-  res.send('Flashcard Generator Backend is running.');
-});
 
-// ✅ Favicon request handler to avoid 500 error
-app.get('/favicon.ico', (req, res) => res.status(204).end());
 module.exports = app;
