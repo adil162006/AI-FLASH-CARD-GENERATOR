@@ -52,8 +52,6 @@ app.use(express.json());
 // 📦 Routes
 app.use('/api/flashcards', flashcardsRouter);
 
-// 📦 Routes
-app.use('/api/flashcards', flashcardsRouter);
 
 // ✅ Default route
 app.get('/', (req, res) => {
