@@ -8,7 +8,15 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
+      "dest": "index.js"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "index.js"
+    },
+    {
+      "src": "/",
       "dest": "index.js"
     }
   ]
